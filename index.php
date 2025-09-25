@@ -6,8 +6,8 @@ require_once 'models/Book.php';
 require_once 'models/Movie.php';
 require_once 'models/Song.php';
 require_once 'models/User.php';
-require_once 'MediaRepository.php';
-require_once 'PasswordValidator.php';
+require_once 'var/MediaRepository.php';
+require_once 'var/PasswordValidator.php';
 
 // Démarrer la session
 session_start();

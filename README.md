@@ -2,7 +2,7 @@ Pour lancer le projet:
 créer un fichier DatabaseParam.php (voir DatabaseParam_Exemple.php) et remplir les champs.
 puis dans un powershell/bash:
 - php init_database.php
-- php -S localhost:8000
+-php -S localhost:8000 php -S localhost:8000
 
 Gestion de la Liste de médias:
     ● Être capable d’ajouter, modifier et supprimer des Médias, de les emprunter & de les rendre.

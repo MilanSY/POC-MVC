@@ -1,7 +1,7 @@
 <?php
 
 require_once 'models/User.php';
-require_once 'PasswordValidator.php';
+require_once __DIR__ . '/../var/PasswordValidator.php';
 
 /**
  * Contrôleur pour l'authentification

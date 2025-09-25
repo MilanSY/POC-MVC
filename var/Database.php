@@ -5,7 +5,7 @@
  * Gère la connexion à la base de données MySQL
  */
 
-require_once 'DatabaseParam.php';
+require_once __DIR__ . '/../DatabaseParam.php';
 
 class Database
 {
