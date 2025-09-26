@@ -22,13 +22,9 @@
             </div>
             
             <div class="auth-section">
-                <?php 
-                require_once 'controllers/AuthController.php';
-                $loggedUser = AuthController::getLoggedUser(); 
-                ?>
-                <?php if ($loggedUser): ?>
+                <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                     <div class="user-menu">
-                        <span class="welcome-text">Bonjour, <?= htmlspecialchars($loggedUser['username']) ?></span>
+                        <span class="welcome-text">Bonjour, <?= htmlspecialchars($_SESSION['username'] ?? '') ?></span>
                         <a href="/logout" class="auth-link logout">Déconnexion</a>
                     </div>
                 <?php else: ?>

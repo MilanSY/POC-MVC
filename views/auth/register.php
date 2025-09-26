@@ -13,7 +13,7 @@
                     id="username" 
                     name="username" 
                     class="form-input"
-                    value="<?= htmlspecialchars($this->oldInput['username'] ?? '') ?>"
+                    value="<?= htmlspecialchars($oldInput['username'] ?? '') ?>"
                     required
                     autocomplete="username"
                     pattern="[a-zA-Z0-9_-]+"
@@ -29,7 +29,7 @@
                     id="email" 
                     name="email" 
                     class="form-input"
-                    value="<?= htmlspecialchars($this->oldInput['email'] ?? '') ?>"
+                    value="<?= htmlspecialchars($oldInput['email'] ?? '') ?>"
                     required
                     autocomplete="email"
                 >
@@ -79,10 +79,10 @@
     </div>
 </div>
 
-<?php if (!empty($this->errors)): ?>
+<?php if (!empty($errors)): ?>
     <div class="alert alert-error alert-fixed">
         <ul class="error-list">
-            <?php foreach ($this->errors as $error): ?>
+            <?php foreach ($errors as $error): ?>
                 <li><?= htmlspecialchars($error) ?></li>
             <?php endforeach; ?>
         </ul>

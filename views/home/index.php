@@ -28,6 +28,18 @@
     </div>
 </section>
 
+<?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+<section class="section">
+    <div class="section-header">
+        <h3 class="section-title">Administration</h3>
+    </div>
+    <div class="admin-actions">
+        <a href="/add-book" class="btn btn-secondary">📚 Ajouter un livre</a>
+        <a href="/add-movie" class="btn btn-secondary">🎬 Ajouter un film</a>
+        <a href="/add-album" class="btn btn-secondary">🎵 Ajouter un album</a>
+    </div>
+</section>
+<?php endif; ?>
 
 <?php if (!empty($allMedias)): ?>
     <section class="featured-section">

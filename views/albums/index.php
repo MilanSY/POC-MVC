@@ -1,5 +1,8 @@
 <div class="section">
-    <h2 class="section-title">Collection d'Albums</h2>
+    <div class="section-header">
+        <h2 class="section-title">Collection d'Albums</h2>
+        <a href="/add-album" class="btn btn-primary">➕ Ajouter un album</a>
+    </div>
     
     <?php if (!empty($albums)): ?>
         <div class="stats">

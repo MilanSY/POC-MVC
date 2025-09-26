@@ -1,5 +1,8 @@
 <div class="section">
-    <h2 class="section-title">Collection de Films</h2>
+    <div class="section-header">
+        <h2 class="section-title">Collection de Films</h2>
+        <a href="/add-movie" class="btn btn-primary">➕ Ajouter un film</a>
+    </div>
     
     <?php if (!empty($movies)): ?>
         <div class="stats">

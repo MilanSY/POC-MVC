@@ -54,29 +54,69 @@ switch ($page) {
         break;
         
     case 'login':
-        include 'controllers/AuthController.php';
-        $controller = new AuthController();
+        include 'controllers/LoginController.php';
+        $controller = new LoginController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller->login();
+            $controller->store();
         } else {
-            $controller->loginForm();
+            $controller->index();
         }
         break;
         
     case 'register':
-        include 'controllers/AuthController.php';
-        $controller = new AuthController();
+        include 'controllers/RegisterController.php';
+        $controller = new RegisterController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller->register();
+            $controller->store();
         } else {
-            $controller->registerForm();
+            $controller->index();
         }
         break;
         
     case 'logout':
-        include 'controllers/AuthController.php';
-        $controller = new AuthController();
-        $controller->logout();
+        include 'controllers/LogoutController.php';
+        $controller = new LogoutController();
+        $controller->index();
+        break;
+        
+    case 'add-book':
+        include 'controllers/AddBookController.php';
+        $controller = new AddBookController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
+        break;
+        
+    case 'add-movie':
+        include 'controllers/AddMovieController.php';
+        $controller = new AddMovieController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
+        break;
+        
+    case 'add-album':
+        include 'controllers/AddAlbumController.php';
+        $controller = new AddAlbumController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
+        break;
+        
+    case 'add-songs':
+        include 'controllers/AddSongsController.php';
+        $controller = new AddSongsController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
         break;
         
     default:

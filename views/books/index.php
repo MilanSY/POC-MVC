@@ -1,5 +1,8 @@
 <div class="section">
-    <h2 class="section-title">Collection de Livres</h2>
+    <div class="section-header">
+        <h2 class="section-title">Collection de Livres</h2>
+        <a href="/add-book" class="btn btn-primary">➕ Ajouter un livre</a>
+    </div>
     
     <?php if (!empty($books)): ?>
         <div class="stats">

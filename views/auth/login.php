@@ -13,8 +13,8 @@
                     type="email" 
                     id="email" 
                     name="email" 
-                    class="form-input <?= isset($this->errors) && !empty($this->errors) ? 'error' : '' ?>"
-                    value="<?= htmlspecialchars($this->oldInput['email'] ?? '') ?>"
+                    class="form-input <?= isset($errors) && !empty($errors) ? 'error' : '' ?>"
+                    value="<?= htmlspecialchars($oldInput['email'] ?? '') ?>"
                     required
                     autocomplete="email"
                 >
@@ -26,7 +26,7 @@
                     type="password" 
                     id="password" 
                     name="password" 
-                    class="form-input <?= isset($this->errors) && !empty($this->errors) ? 'error' : '' ?>"
+                    class="form-input <?= isset($errors) && !empty($errors) ? 'error' : '' ?>"
                     required
                     autocomplete="current-password"
                 >
@@ -46,10 +46,10 @@
     </div>
 </div>
 
-<?php if (!empty($this->errors)): ?>
+<?php if (!empty($errors)): ?>
     <div class="alert alert-error alert-fixed">
         <ul class="error-list">
-            <?php foreach ($this->errors as $error): ?>
+            <?php foreach ($errors as $error): ?>
                 <li><?= htmlspecialchars($error) ?></li>
             <?php endforeach; ?>
         </ul>

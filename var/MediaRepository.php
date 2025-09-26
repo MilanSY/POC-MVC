@@ -277,4 +277,135 @@ class MediaRepository
         
         return $this->getAllMedias($type);
     }
+
+    /**
+     * Ajouter un livre
+     * 
+     * @param string $titre Titre du livre
+     * @param string $auteur Auteur du livre
+     * @param int $pageNumber Nombre de pages
+     * @return bool
+     */
+    public function addBook(string $titre, string $auteur, int $pageNumber): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Insérer dans la table medias
+            $stmt = $this->pdo->prepare("
+                INSERT INTO medias (titre, auteur, type_media, disponible) 
+                VALUES (?, ?, 'book', TRUE)
+            ");
+            $stmt->execute([$titre, $auteur]);
+            $mediaId = $this->pdo->lastInsertId();
+            
+            // Insérer dans la table books
+            $stmt = $this->pdo->prepare("
+                INSERT INTO books (media_id, page_number) 
+                VALUES (?, ?)
+            ");
+            $stmt->execute([$mediaId, $pageNumber]);
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Ajouter un film
+     * 
+     * @param string $titre Titre du film
+     * @param string $auteur Réalisateur du film
+     * @param int $duration Durée en minutes
+     * @param string $genre Genre du film
+     * @return bool
+     */
+    public function addMovie(string $titre, string $auteur, int $duration, string $genre): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Insérer dans la table medias
+            $stmt = $this->pdo->prepare("
+                INSERT INTO medias (titre, auteur, type_media, disponible) 
+                VALUES (?, ?, 'movie', TRUE)
+            ");
+            $stmt->execute([$titre, $auteur]);
+            $mediaId = $this->pdo->lastInsertId();
+            
+            // Insérer dans la table movies
+            $stmt = $this->pdo->prepare("
+                INSERT INTO movies (media_id, duration, genre) 
+                VALUES (?, ?, ?)
+            ");
+            $stmt->execute([$mediaId, $duration, $genre]);
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Ajouter un album avec ses chansons
+     * 
+     * @param string $titre Titre de l'album
+     * @param string $auteur Artiste de l'album
+     * @param string $editeur Éditeur de l'album
+     * @param array $songs Tableau des chansons [['title' => '', 'note' => 0, 'duration' => 0], ...]
+     * @return bool
+     */
+    public function addAlbumWithSongs(string $titre, string $auteur, string $editeur, array $songs): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Insérer dans la table medias
+            $stmt = $this->pdo->prepare("
+                INSERT INTO medias (titre, auteur, type_media, disponible) 
+                VALUES (?, ?, 'album', TRUE)
+            ");
+            $stmt->execute([$titre, $auteur]);
+            $mediaId = $this->pdo->lastInsertId();
+            
+            // Insérer dans la table albums
+            $stmt = $this->pdo->prepare("
+                INSERT INTO albums (media_id, track_number, editor) 
+                VALUES (?, ?, ?)
+            ");
+            $stmt->execute([$mediaId, count($songs), $editeur]);
+            $albumId = $this->pdo->lastInsertId();
+            
+            // Insérer les chansons
+            $songStmt = $this->pdo->prepare("
+                INSERT INTO songs (title, note, duration) 
+                VALUES (?, ?, ?)
+            ");
+            
+            $albumSongStmt = $this->pdo->prepare("
+                INSERT INTO album_songs (album_id, song_id, track_position) 
+                VALUES (?, ?, ?)
+            ");
+            
+            foreach ($songs as $index => $song) {
+                // Insérer la chanson
+                $songStmt->execute([$song['title'], $song['note'], $song['duration']]);
+                $songId = $this->pdo->lastInsertId();
+                
+                // Lier la chanson à l'album
+                $albumSongStmt->execute([$albumId, $songId, $index + 1]);
+            }
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
 }
