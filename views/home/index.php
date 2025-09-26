@@ -99,13 +99,17 @@
                     <div class="media-actions">
                         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                             <?php if ($media['disponible']): ?>
-                                <button class="btn btn-primary" data-action="borrow" data-media-id="<?= $media['id'] ?>">
-                                    Emprunter
-                                </button>
+                                <form method="POST" action="/home" style="display: inline;">
+                                    <input type="hidden" name="action" value="borrow">
+                                    <input type="hidden" name="media_id" value="<?= $media['id'] ?>">
+                                    <button type="submit" class="btn btn-primary">Emprunter</button>
+                                </form>
                             <?php else: ?>
-                                <button class="btn btn-secondary" data-action="return" data-media-id="<?= $media['id'] ?>">
-                                    Rendre
-                                </button>
+                                <form method="POST" action="/home" style="display: inline;">
+                                    <input type="hidden" name="action" value="return">
+                                    <input type="hidden" name="media_id" value="<?= $media['id'] ?>">
+                                    <button type="submit" class="btn btn-secondary">Rendre</button>
+                                </form>
                             <?php endif; ?>
                         <?php else: ?>
                             <p class="auth-required"><a href="/login">Connectez-vous</a> pour emprunter</p>

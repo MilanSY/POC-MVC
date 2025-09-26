@@ -14,6 +14,12 @@ class HomeController
     
     public function index()
     {
+        // Traiter les actions POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->handleAction();
+            return;
+        }
+
         $allMedias = $this->repository->getAllMedias();
         shuffle($allMedias);
 
@@ -26,5 +32,39 @@ class HomeController
         include 'views/layouts/header.php';
         include 'views/home/index.php';
         include 'views/layouts/footer.php';
+    }
+
+    private function handleAction()
+    {
+        // Vérifier l'authentification
+        if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || !isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit();
+        }
+
+        if (!isset($_POST['action']) || !isset($_POST['media_id'])) {
+            header('Location: /home');
+            exit();
+        }
+
+        $action = $_POST['action'];
+        $mediaId = (int)$_POST['media_id'];
+        $userId = $_SESSION['user_id'];
+
+        try {
+            if ($action === 'borrow') {
+                if ($this->repository->canBorrowMedia($mediaId)) {
+                    $this->repository->emprunterMedia($mediaId, $userId);
+                }
+            } elseif ($action === 'return') {
+                $this->repository->rendreMedia($mediaId, $userId);
+            }
+        } catch (Exception $e) {
+            // En cas d'erreur, on redirige simplement
+        }
+
+        // Rediriger vers la même page
+        header('Location: /home');
+        exit();
     }
 }
