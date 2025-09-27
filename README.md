@@ -2,16 +2,16 @@ Pour lancer le projet:
 créer un fichier DatabaseParam.php (voir DatabaseParam_Exemple.php) et remplir les champs.
 puis dans un powershell/bash:
 - php init_database.php
--php -S localhost:8000 php -S localhost:8000
+- php -S localhost:8000
 
 Gestion de la Liste de médias:
-    ● Être capable d’ajouter, modifier et supprimer des Médias, de les emprunter & de les rendre.
-        ○ Uniquement pour les utilisateurs authentifiés
-    ● Un utilisateur peut rechercher un film de manière approximative.
+    ● Être capable d’ajouter, modifier et supprimer des Médias, de les emprunter & de les rendre. ❌️ (manque les album)
+        ○ Uniquement pour les utilisateurs authentifiés  ✅️
+    ● Un utilisateur peut rechercher un film de manière approximative. ❌️
     ● L’utilisateur doit pouvoir trier. ✅
     ● Les classes doivent être documentées. ✅
-    ● Gérer des illustrations par Médias. (si par illustration on entend un template unique pour chaque media ?) ✅
-    ● Gérer du Lazy Loading (Optionnel)
+    ● Gérer des illustrations par Médias. ❌️
+    ● Gérer du Lazy Loading (Optionnel) ❌️
 
 Authentification :
     ● Mettez en place un système d'inscription et de connexion pour les utilisateurs. ✅
