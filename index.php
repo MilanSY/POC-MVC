@@ -119,6 +119,76 @@ switch ($page) {
         }
         break;
         
+    case 'book-details':
+        include 'controllers/BookDetailsController.php';
+        $controller = new BookDetailsController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->handleAction();
+        } else {
+            $controller->show();
+        }
+        break;
+        
+    case 'movie-details':
+        include 'controllers/MovieDetailsController.php';
+        $controller = new MovieDetailsController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->handleAction();
+        } else {
+            $controller->show();
+        }
+        break;
+        
+    case 'album-details':
+        include 'controllers/AlbumDetailsController.php';
+        $controller = new AlbumDetailsController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->handleAction();
+        } else {
+            $controller->show();
+        }
+        break;
+        
+    case 'edit-book':
+        include 'controllers/EditBookController.php';
+        $controller = new EditBookController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
+        break;
+        
+    case 'edit-movie':
+        include 'controllers/EditMovieController.php';
+        $controller = new EditMovieController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
+        break;
+        
+    case 'edit-album':
+        include 'controllers/EditAlbumController.php';
+        $controller = new EditAlbumController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
+        break;
+        
+    case 'edit-songs':
+        include 'controllers/EditSongsController.php';
+        $controller = new EditSongsController($repository);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->store();
+        } else {
+            $controller->index();
+        }
+        break;
+        
     default:
         // Page 404
         http_response_code(404);

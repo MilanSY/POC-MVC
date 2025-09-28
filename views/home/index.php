@@ -66,7 +66,11 @@
                         </span>
                     </div>
                     
-                    <h3 class="media-title"><?= htmlspecialchars($media['titre']) ?></h3>
+                    <h3 class="media-title">
+                        <a href="/<?= $media['type_media'] ?>-details/<?= $media['id'] ?>" class="media-title-link">
+                            <?= htmlspecialchars($media['titre']) ?>
+                        </a>
+                    </h3>
                     <p class="media-author">par <?= htmlspecialchars($media['auteur']) ?></p>
                     
                     <div class="media-details">
@@ -109,18 +113,20 @@
                     </div>
                     
                     <div class="media-actions">
+                        <a href="/<?= $media['type_media'] ?>-details/<?= $media['id'] ?>" class="btn btn-outline btn-small">👁️ Détails</a>
+                        
                         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                             <?php if ($media['disponible']): ?>
                                 <form method="POST" action="/home" style="display: inline;">
                                     <input type="hidden" name="action" value="borrow">
                                     <input type="hidden" name="media_id" value="<?= $media['id'] ?>">
-                                    <button type="submit" class="btn btn-primary">Emprunter</button>
+                                    <button type="submit" class="btn btn-primary btn-small">Emprunter</button>
                                 </form>
                             <?php else: ?>
                                 <form method="POST" action="/home" style="display: inline;">
                                     <input type="hidden" name="action" value="return">
                                     <input type="hidden" name="media_id" value="<?= $media['id'] ?>">
-                                    <button type="submit" class="btn btn-secondary">Rendre</button>
+                                    <button type="submit" class="btn btn-secondary btn-small">Rendre</button>
                                 </form>
                             <?php endif; ?>
                         <?php else: ?>

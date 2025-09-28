@@ -5,7 +5,7 @@ puis dans un powershell/bash:
 - php -S localhost:8000
 
 Gestion de la Liste de médias:
-    ● Être capable d’ajouter, modifier et supprimer des Médias, de les emprunter & de les rendre. ❌️ (manque les album)
+    ● Être capable d’ajouter, modifier et supprimer des Médias, de les emprunter & de les rendre. ✅
         ○ Uniquement pour les utilisateurs authentifiés  ✅️
     ● Un utilisateur peut rechercher un film de manière approximative. ❌️
     ● L’utilisateur doit pouvoir trier. ✅
