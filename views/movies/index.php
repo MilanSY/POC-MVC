@@ -1,7 +1,7 @@
 <div class="section">
     <div class="section-header">
         <h2 class="section-title">Collection de Films</h2>
-        <a href="/add-movie" class="btn btn-primary">➕ Ajouter un film</a>
+        <a href="/add-movie" class="btn btn-primary">Ajouter un film</a>
     </div>
     
     <?php if (!empty($movies)): ?>
@@ -39,14 +39,6 @@
                     
                     <div class="media-details">
                         <div class="detail-item">
-                            <span class="detail-label">Durée</span>
-                            <span class="detail-value"><?= $movie['duration'] ?? 'N/A' ?> min</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Genre</span>
-                            <span class="detail-value"><?= $movie['genre'] ?? 'N/A' ?></span>
-                        </div>
-                        <div class="detail-item">
                             <span class="detail-label">Statut</span>
                             <span class="detail-value">
                                 <?php if ($movie['disponible']): ?>
@@ -59,7 +51,7 @@
                     </div>
                     
                     <div class="media-actions">
-                        <a href="/movie-details/<?= $movie['id'] ?>" class="btn btn-outline btn-small">👁️ Détails</a>
+                        <a href="/movie-details/<?= $movie['id'] ?>" class="btn btn-outline btn-small">Détails</a>
                         
                         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                             <?php if ($movie['disponible']): ?>

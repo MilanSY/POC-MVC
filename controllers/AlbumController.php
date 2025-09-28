@@ -14,7 +14,6 @@ class AlbumController
     
     public function index()
     {
-        // Traiter les actions POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->handleAction();
             return;
@@ -33,7 +32,6 @@ class AlbumController
 
     private function handleAction()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || !isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit();
@@ -57,10 +55,8 @@ class AlbumController
                 $this->repository->rendreMedia($mediaId, $userId);
             }
         } catch (Exception $e) {
-            // En cas d'erreur, on redirige simplement
         }
 
-        // Rediriger vers la même page
         header('Location: /albums');
         exit();
     }

@@ -36,7 +36,7 @@ class RegisterController
         $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        // Validation des champs
+        
         if (empty($username)) {
             $this->errors[] = 'Le nom d\'utilisateur est requis.';
         } elseif (strlen($username) < 3) {
@@ -56,11 +56,9 @@ class RegisterController
         if (empty($password)) {
             $this->errors[] = 'Le mot de passe est requis.';
         } else {
-            // Valider le mot de passe
-            $passwordValidator = new PasswordValidator();
-            $passwordValidation = $passwordValidator->validate($password);
+            $passwordValidation = PasswordValidator::validate($password, $username);
             
-            if (!$passwordValidation['isValid']) {
+            if (!$passwordValidation['valid']) {
                 foreach ($passwordValidation['errors'] as $error) {
                     $this->errors[] = $error;
                 }
@@ -78,7 +76,7 @@ class RegisterController
             return;
         }
 
-        // Créer l'utilisateur
+        
         try {
             $passwordHash = User::hashPassword($password);
             $user = new User($username, $email, $passwordHash);
@@ -97,7 +95,6 @@ class RegisterController
             $this->errors[] = 'Erreur lors de la création du compte: ' . $e->getMessage();
         }
 
-        // Réafficher le formulaire avec les erreurs
         $this->index();
     }
 }

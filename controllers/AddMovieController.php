@@ -23,7 +23,6 @@ class AddMovieController
         $errors = $this->errors;
         $oldInput = $this->oldInput;
         
-        // Récupérer les genres disponibles
         $genres = [
             'Action' => 'Action',
             'Comédie' => 'Comédie',
@@ -45,7 +44,6 @@ class AddMovieController
     {
         $this->oldInput = $_POST;
         
-        // Validation des champs
         if (empty($_POST['titre'])) {
             $this->errors[] = "Le titre est obligatoire.";
         }
@@ -69,7 +67,6 @@ class AddMovieController
         if (empty($_POST['genre'])) {
             $this->errors[] = "Le genre est obligatoire.";
         } else {
-            // Vérifier que le genre est valide
             $validGenres = ['Action', 'Comédie', 'Drame', 'Science-Fiction', 'Horreur', 'Documentaire'];
             if (!in_array($_POST['genre'], $validGenres)) {
                 $this->errors[] = "Genre non valide.";
@@ -77,7 +74,6 @@ class AddMovieController
         }
 
         if (empty($this->errors)) {
-            // Formatter la durée en string
             $hours = (int)($_POST['duration_hours'] ?? 0);
             $minutes = (int)($_POST['duration_minutes'] ?? 0);
             
@@ -91,7 +87,6 @@ class AddMovieController
                 $durationString = $minutes . 'min';
             }
             
-            // Ajouter le film en base
             $success = $this->repository->addMovie($_POST['titre'], $_POST['auteur'], $durationString, $_POST['genre']);
             
             if ($success) {
@@ -102,7 +97,6 @@ class AddMovieController
             }
         }
 
-        // Réafficher le formulaire avec les erreurs
         $this->index();
     }
 }

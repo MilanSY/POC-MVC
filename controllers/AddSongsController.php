@@ -1,9 +1,5 @@
 <?php
 
-// Configuration temporaire pour les logs de debug
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/../debug.log');
-
 /**
  * Contrôleur pour l'ajout de chansons
  */
@@ -40,11 +36,7 @@ class AddSongsController
      */
     public function store()
     {
-        // Debug: log du début
-        error_log("AddSongsController::store() - Début");
-        
         if (!isset($_SESSION['album_data'])) {
-            error_log("AddSongsController::store() - Pas de données d'album en session");
             header('Location: /add-album');
             exit();
         }
@@ -52,11 +44,6 @@ class AddSongsController
         $albumData = $_SESSION['album_data'];
         $nbTracks = $albumData['nb_tracks'];
         
-        error_log("AddSongsController::store() - Album: " . json_encode($albumData));
-        error_log("AddSongsController::store() - POST: " . json_encode($_POST));
-        
-        
-        // Validation des chansons
         for ($i = 1; $i <= $nbTracks; $i++) {
             if (empty($_POST["song_title_$i"])) {
                 $this->errors[] = "Le titre de la chanson $i est obligatoire.";
@@ -80,12 +67,8 @@ class AddSongsController
         }
 
         if (empty($this->errors)) {
-            error_log("AddSongsController::store() - Pas d'erreurs, traitement des chansons");
-            
-            // Préparer les données des chansons
             $songs = [];
             for ($i = 1; $i <= $nbTracks; $i++) {
-                // Formatter la durée en string
                 $minutes = (int)($_POST["song_duration_minutes_$i"] ?? 0);
                 $seconds = (int)($_POST["song_duration_seconds_$i"] ?? 0);
                 
@@ -105,13 +88,9 @@ class AddSongsController
                     'duration' => $durationString
                 ];
                 
-                error_log("AddSongsController::store() - Chanson $i: " . json_encode($song));
                 $songs[] = $song;
             }
             
-            error_log("AddSongsController::store() - Appel addAlbumWithSongs");
-            
-            // Ajouter l'album et les chansons en base
             $success = $this->repository->addAlbumWithSongs(
                 $albumData['titre'],
                 $albumData['auteur'],
@@ -119,22 +98,15 @@ class AddSongsController
                 $songs
             );
             
-            error_log("AddSongsController::store() - Résultat addAlbumWithSongs: " . ($success ? 'true' : 'false'));
-            
             if ($success) {
                 unset($_SESSION['album_data']);
-                error_log("AddSongsController::store() - Succès, redirection");
                 header('Location: /albums?success=1');
                 exit();
             } else {
-                error_log("AddSongsController::store() - Échec de l'ajout");
                 $this->errors[] = "Erreur lors de l'ajout de l'album. Vérifiez les logs pour plus de détails.";
             }
-        } else {
-            error_log("AddSongsController::store() - Erreurs de validation: " . json_encode($this->errors));
         }
 
-        // Réafficher le formulaire avec les erreurs
         $this->index();
     }
 }

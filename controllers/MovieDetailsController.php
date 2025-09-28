@@ -17,7 +17,6 @@ class MovieDetailsController
      */
     public function show()
     {
-        // Récupérer l'ID du film depuis l'URL
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         
@@ -44,7 +43,6 @@ class MovieDetailsController
      */
     public function handleAction()
     {
-        // Vérifier l'authentification pour toutes les actions
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || !isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit();
@@ -73,7 +71,6 @@ class MovieDetailsController
                     
                 case 'delete':
                     $this->repository->deleteMedia($mediaId);
-                    // Rediriger vers la page des films après suppression
                     header('Location: /movies');
                     exit();
                     
@@ -90,11 +87,9 @@ class MovieDetailsController
                     break;
             }
         } catch (Exception $e) {
-            // En cas d'erreur, on redirige simplement
             error_log("Erreur dans MovieDetailsController: " . $e->getMessage());
         }
 
-        // Rediriger vers la même page
         header('Location: /movie-details/' . $mediaId);
         exit();
     }

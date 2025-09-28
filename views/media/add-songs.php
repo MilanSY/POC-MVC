@@ -1,4 +1,4 @@
-<div class="auth-container" style="max-width: 800px;">
+<div class="auth-container songs-form">
     <div class="auth-card">
         <div class="auth-header">
             <h1 class="auth-title"><?= isset($songsData) ? 'Modifier les chansons' : 'Ajouter les chansons' ?></h1>
@@ -15,8 +15,8 @@
             <?php for ($i = 1; $i <= $albumData['nb_tracks']; $i++): 
                 $songData = isset($songsData) && isset($songsData[$i-1]) ? $songsData[$i-1] : null;
             ?>
-                <div style="border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #f9f9f9;">
-                    <h3 style="margin-top: 0; color: #333;">Piste <?= $i ?></h3>
+                <div class="song-form-item">
+                    <h3 class="song-form-title">Piste <?= $i ?></h3>
                     
                     <div class="form-group">
                         <label for="song_title_<?= $i ?>" class="form-label">Titre *</label>
@@ -49,27 +49,25 @@
                     
                     <div class="form-group">
                         <label class="form-label">Durée *</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
+                        <div class="duration-input-group">
                             <input 
                                 type="number" 
                                 name="song_duration_minutes_<?= $i ?>" 
-                                class="form-input <?= isset($errors) && !empty($errors) ? 'error' : '' ?>"
+                                class="form-input duration-input <?= isset($errors) && !empty($errors) ? 'error' : '' ?>"
                                 value="<?= htmlspecialchars($songData ? $songData['duration_minutes'] : ($_POST["song_duration_minutes_$i"] ?? '')) ?>"
                                 min="0"
                                 max="59"
                                 placeholder="Minutes"
-                                style="flex: 1;"
                             >
-                            <span>:</span>
+                            <span class="duration-separator">:</span>
                             <input 
                                 type="number" 
                                 name="song_duration_seconds_<?= $i ?>" 
-                                class="form-input <?= isset($errors) && !empty($errors) ? 'error' : '' ?>"
+                                class="form-input duration-input <?= isset($errors) && !empty($errors) ? 'error' : '' ?>"
                                 value="<?= htmlspecialchars($songData ? $songData['duration_seconds'] : ($_POST["song_duration_seconds_$i"] ?? '')) ?>"
                                 min="0"
                                 max="59"
                                 placeholder="Secondes"
-                                style="flex: 1;"
                             >
                         </div>
                     </div>

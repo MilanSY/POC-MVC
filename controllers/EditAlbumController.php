@@ -17,13 +17,11 @@ class EditAlbumController
      */
     public function index()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID de l'album depuis l'URL
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         
@@ -40,7 +38,6 @@ class EditAlbumController
             exit();
         }
 
-        // Préparer les données pour le formulaire (comme pour l'ajout)
         $oldInput = [
             'titre' => $album['titre'],
             'auteur' => $album['auteur'],
@@ -48,13 +45,12 @@ class EditAlbumController
             'editeur' => $album['editor']
         ];
         $errors = [];
-        $isEdit = true; // Flag pour indiquer que c'est une modification
+        $isEdit = true;
         
-        // Créer un objet album pour l'action du formulaire
         $albumObj = (object) $album;
 
         include 'views/layouts/header.php';
-        include 'views/media/add-album.php'; // Réutiliser la vue d'ajout
+        include 'views/media/add-album.php';
         include 'views/layouts/footer.php';
     }
     
@@ -63,13 +59,11 @@ class EditAlbumController
      */
     public function store()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID de l'album
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         $albumId = (int)$path[2];
@@ -77,7 +71,6 @@ class EditAlbumController
         $errors = [];
         $oldInput = $_POST;
 
-        // Validation
         if (empty(trim($_POST['titre']))) {
             $errors['titre'] = 'Le titre est requis.';
         }
@@ -94,7 +87,6 @@ class EditAlbumController
             $errors['editeur'] = 'L\'éditeur est requis.';
         }
 
-        // Si pas d'erreur, mettre à jour
         if (empty($errors)) {
             $success = $this->repository->updateAlbum(
                 $albumId,
@@ -105,7 +97,6 @@ class EditAlbumController
             );
 
             if ($success) {
-                // Rediriger vers la modification des chansons
                 header('Location: /edit-songs/' . $albumId);
                 exit();
             } else {
@@ -113,7 +104,6 @@ class EditAlbumController
             }
         }
 
-        // Si erreur, réafficher le formulaire avec les erreurs
         $album = $this->repository->getMediaDetails($albumId);
         $isEdit = true;
         $albumObj = (object) $album;

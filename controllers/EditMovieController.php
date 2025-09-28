@@ -17,13 +17,11 @@ class EditMovieController
      */
     public function index()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID du film depuis l'URL
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         
@@ -40,13 +38,10 @@ class EditMovieController
             exit();
         }
 
-        // Préparer les données pour le formulaire (comme pour l'ajout)
-        // Parser la durée string (ex: "2h 30min") vers heures et minutes
         $durationString = $movie['movie_duration'] ?? '';
         $hours = 0;
         $minutes = 0;
         
-        // Parser la durée (format: "2h 30min" ou "150min" ou "2h")
         if (preg_match('/(\d+)h/', $durationString, $hourMatches)) {
             $hours = (int)$hourMatches[1];
         }
@@ -62,7 +57,6 @@ class EditMovieController
             'genre' => $movie['genre']
         ];
         
-        // Genres disponibles (même liste que dans AddMovieController)
         $genres = [
             'Action' => 'Action',
             'Comédie' => 'Comédie',
@@ -73,13 +67,12 @@ class EditMovieController
         ];
         
         $errors = [];
-        $isEdit = true; // Flag pour indiquer que c'est une modification
+        $isEdit = true;
         
-        // Créer un objet movie pour l'action du formulaire
         $movieObj = (object) $movie;
 
         include 'views/layouts/header.php';
-        include 'views/media/add-movie.php'; // Réutiliser la vue d'ajout
+        include 'views/media/add-movie.php';
         include 'views/layouts/footer.php';
     }
     
@@ -88,13 +81,11 @@ class EditMovieController
      */
     public function store()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID du film
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         $movieId = (int)$path[2];
@@ -102,7 +93,6 @@ class EditMovieController
         $errors = [];
         $oldInput = $_POST;
 
-        // Validation
         if (empty(trim($_POST['titre']))) {
             $errors['titre'] = 'Le titre est requis.';
         }
@@ -118,7 +108,6 @@ class EditMovieController
             $errors['duration'] = 'La durée doit être supérieure à 0.';
         }
         
-        // Construire la string de durée dans le format attendu
         $durationString = '';
         if ($hours > 0) {
             $durationString .= $hours . 'h';
@@ -132,7 +121,6 @@ class EditMovieController
             $errors['genre'] = 'Le genre est requis.';
         }
 
-        // Si pas d'erreur, mettre à jour
         if (empty($errors)) {
             $success = $this->repository->updateMovie(
                 $movieId,
@@ -150,12 +138,10 @@ class EditMovieController
             }
         }
 
-        // Si erreur, réafficher le formulaire avec les erreurs
         $movie = $this->repository->getMediaDetails($movieId);
         $isEdit = true;
         $movieObj = (object) $movie;
         
-        // Repasser les genres disponibles
         $genres = [
             'Action' => 'Action',
             'Comédie' => 'Comédie',

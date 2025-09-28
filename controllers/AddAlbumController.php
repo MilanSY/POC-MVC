@@ -34,7 +34,6 @@ class AddAlbumController
     {
         $this->oldInput = $_POST;
         
-        // Validation des champs
         if (empty($_POST['titre'])) {
             $this->errors[] = "Le titre est obligatoire.";
         }
@@ -52,7 +51,6 @@ class AddAlbumController
         }
 
         if (empty($this->errors)) {
-            // Stocker les données de l'album en session pour l'étape 2
             $_SESSION['album_data'] = [
                 'titre' => $_POST['titre'],
                 'auteur' => $_POST['auteur'],
@@ -64,7 +62,6 @@ class AddAlbumController
             exit();
         }
 
-        // Réafficher le formulaire avec les erreurs
         $this->index();
     }
 }

@@ -1,7 +1,7 @@
 <div class="section">
     <div class="section-header">
         <h2 class="section-title">Collection de Livres</h2>
-        <a href="/add-book" class="btn btn-primary">➕ Ajouter un livre</a>
+        <a href="/add-book" class="btn btn-primary">Ajouter un livre</a>
     </div>
     
     <?php if (!empty($books)): ?>
@@ -39,14 +39,10 @@
                     
                     <div class="media-details">
                         <div class="detail-item">
-                            <span class="detail-label">Pages</span>
-                            <span class="detail-value"><?= $book['page_number'] ?? 'N/A' ?></span>
-                        </div>
-                        <div class="detail-item">
                             <span class="detail-label">Statut</span>
                             <span class="detail-value">
                                 <?php if ($book['disponible']): ?>
-                                    En rayons
+                                    Disponible                                    
                                 <?php else: ?>
                                     Emprunté par <strong><?= htmlspecialchars($book['borrowed_by_username'] ?? 'Inconnu') ?></strong>
                                 <?php endif; ?>
@@ -55,7 +51,7 @@
                     </div>
                     
                     <div class="media-actions">
-                        <a href="/book-details/<?= $book['id'] ?>" class="btn btn-outline btn-small">👁️ Détails</a>
+                        <a href="/book-details/<?= $book['id'] ?>" class="btn btn-outline btn-small">Détails</a>
                         
                         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                             <?php if ($book['disponible']): ?>

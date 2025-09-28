@@ -5,16 +5,7 @@
             <p class="auth-subtitle"><?= isset($isEdit) && $isEdit ? 'Modifiez les informations du livre' : 'Ajoutez un nouveau livre à la médiathèque' ?></p>
         </div>
         
-        <?php
-        // Construire l'URL d'action
-        $actionUrl = '/add-book';
-        if (isset($isEdit) && $isEdit) {
-            $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
-            $actionUrl = $uri; // Garder la même URL pour l'édition
-        }
-        ?>
-        
-                <form method="POST" action="<?= $isEdit ? '/edit-book/' . $bookObj->id : '/add-book' ?>" class="auth-form">
+        <form method="POST" action="<?= $isEdit ? '/edit-book/' . $bookObj->id : '/add-book' ?>" class="auth-form">
             <div class="form-group">
                 <label for="titre" class="form-label">Titre *</label>
                 <input 

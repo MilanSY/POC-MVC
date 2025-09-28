@@ -17,8 +17,7 @@
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1>Médiathèque Moderne</h1>
-                <p>Découvrez notre collection de livres, films et albums</p>
+                <h1>Médiathèque</h1>
             </div>
             
             <div class="auth-section">

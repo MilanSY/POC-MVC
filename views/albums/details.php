@@ -2,7 +2,7 @@
     <div class="media-details-header">
         <a href="/albums" class="back-button">← Retour aux albums</a>
         <div class="media-type-badge album">
-            🎵 Album
+            Album
         </div>
     </div>
 
@@ -13,10 +13,8 @@
             
             <div class="availability-status <?= $album['disponible'] ? 'available' : 'unavailable' ?>">
                 <?php if ($album['disponible']): ?>
-                    <span class="status-icon">✅</span>
                     <span class="status-text">Disponible</span>
                 <?php else: ?>
-                    <span class="status-icon">📤</span>
                     <span class="status-text">Emprunté par <strong><?= htmlspecialchars($album['borrowed_by_username'] ?? 'Inconnu') ?></strong></span>
                 <?php endif; ?>
             </div>
@@ -77,23 +75,23 @@
                         <form method="POST" action="/album-details/<?= $album['id'] ?>" style="display: inline;">
                             <input type="hidden" name="action" value="borrow">
                             <input type="hidden" name="media_id" value="<?= $album['id'] ?>">
-                            <button type="submit" class="btn btn-primary btn-large">📥 Emprunter</button>
+                            <button type="submit" class="btn btn-primary btn-large">Emprunter</button>
                         </form>
                     <?php else: ?>
                         <form method="POST" action="/album-details/<?= $album['id'] ?>" style="display: inline;">
                             <input type="hidden" name="action" value="return">
                             <input type="hidden" name="media_id" value="<?= $album['id'] ?>">
-                            <button type="submit" class="btn btn-secondary btn-large">📤 Rendre</button>
+                            <button type="submit" class="btn btn-secondary btn-large">Rendre</button>
                         </form>
                     <?php endif; ?>
                 </div>
                 
                 <div class="secondary-actions">
-                    <a href="/edit-album/<?= $album['id'] ?>" class="btn btn-outline">✏️ Modifier</a>
+                    <a href="/edit-album/<?= $album['id'] ?>" class="btn btn-outline">Modifier</a>
                     <form method="POST" action="/album-details/<?= $album['id'] ?>" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet album ? Cette action est irréversible.')">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="media_id" value="<?= $album['id'] ?>">
-                        <button type="submit" class="btn btn-danger">🗑️ Supprimer</button>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
                     </form>
                 </div>
             </div>

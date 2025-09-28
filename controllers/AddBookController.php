@@ -34,7 +34,6 @@ class AddBookController
     {
         $this->oldInput = $_POST;
         
-        // Validation des champs
         if (empty($_POST['titre'])) {
             $this->errors[] = "Le titre est obligatoire.";
         }
@@ -48,7 +47,6 @@ class AddBookController
         }
 
         if (empty($this->errors)) {
-            // Ajouter le livre en base
             $success = $this->repository->addBook($_POST['titre'], $_POST['auteur'], (int)$_POST['page_number']);
             
             if ($success) {
@@ -59,7 +57,6 @@ class AddBookController
             }
         }
 
-        // Réafficher le formulaire avec les erreurs
         $this->index();
     }
 }

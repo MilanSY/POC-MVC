@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Contrôleur pour les détails des livres
+ * Contrôleur pour les détail    private function handleAction()
+    {
+        if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || !isset($_SESSION['user_id'])) {s livres
  */
 class BookDetailsController
 {
@@ -17,7 +19,6 @@ class BookDetailsController
      */
     public function show()
     {
-        // Récupérer l'ID du livre depuis l'URL
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         
@@ -73,7 +74,6 @@ class BookDetailsController
                     
                 case 'delete':
                     $this->repository->deleteMedia($mediaId);
-                    // Rediriger vers la page des livres après suppression
                     header('Location: /books');
                     exit();
                     
@@ -89,11 +89,9 @@ class BookDetailsController
                     break;
             }
         } catch (Exception $e) {
-            // En cas d'erreur, on redirige simplement
             error_log("Erreur dans BookDetailsController: " . $e->getMessage());
         }
 
-        // Rediriger vers la même page
         header('Location: /book-details/' . $mediaId);
         exit();
     }

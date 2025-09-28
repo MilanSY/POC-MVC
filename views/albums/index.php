@@ -1,7 +1,7 @@
 <div class="section">
     <div class="section-header">
         <h2 class="section-title">Collection d'Albums</h2>
-        <a href="/add-album" class="btn btn-primary">➕ Ajouter un album</a>
+        <a href="/add-album" class="btn btn-primary">Ajouter un album</a>
     </div>
     
     <?php if (!empty($albums)): ?>
@@ -39,20 +39,12 @@
                     
                     <div class="media-details">
                         <div class="detail-item">
-                            <span class="detail-label">Pistes</span>
-                            <span class="detail-value"><?= $album['track_number'] ?? 'N/A' ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Label</span>
-                            <span class="detail-value"><?= htmlspecialchars($album['editor'] ?? 'N/A') ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">📊 Statut</span>
+                            <span class="detail-label">Statut</span>
                             <span class="detail-value">
                                 <?php if ($album['disponible']): ?>
-                                    ✅ Disponible
+                                    Disponible
                                 <?php else: ?>
-                                    📤 Emprunté par <strong><?= htmlspecialchars($album['borrowed_by_username'] ?? 'Inconnu') ?></strong>
+                                    Emprunté par <strong><?= htmlspecialchars($album['borrowed_by_username'] ?? 'Inconnu') ?></strong>
                                 <?php endif; ?>
                             </span>
                         </div>
@@ -75,7 +67,7 @@
                     <?php endif; ?>
                     
                     <div class="media-actions">
-                        <a href="/album-details/<?= $album['id'] ?>" class="btn btn-outline btn-small">👁️ Détails</a>
+                        <a href="/album-details/<?= $album['id'] ?>" class="btn btn-outline btn-small">Détails</a>
                         
                         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                             <?php if ($album['disponible']): ?>

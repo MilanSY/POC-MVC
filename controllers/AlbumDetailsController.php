@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Contrôleur pour les détails des albums
+ * Contrôleur pour les détail    private function handleAction()
+    {
+        if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || !isset($_SESSION['user_id'])) {s albums
  */
 class AlbumDetailsController
 {
@@ -17,7 +19,6 @@ class AlbumDetailsController
      */
     public function show()
     {
-        // Récupérer l'ID de l'album depuis l'URL
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         
@@ -73,7 +74,6 @@ class AlbumDetailsController
                     
                 case 'delete':
                     $this->repository->deleteMedia($mediaId);
-                    // Rediriger vers la page des albums après suppression
                     header('Location: /albums');
                     exit();
                     
@@ -90,11 +90,9 @@ class AlbumDetailsController
                     break;
             }
         } catch (Exception $e) {
-            // En cas d'erreur, on redirige simplement
             error_log("Erreur dans AlbumDetailsController: " . $e->getMessage());
         }
 
-        // Rediriger vers la même page
         header('Location: /album-details/' . $mediaId);
         exit();
     }

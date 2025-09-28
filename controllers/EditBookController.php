@@ -17,13 +17,11 @@ class EditBookController
      */
     public function index()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID du livre depuis l'URL
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         
@@ -40,20 +38,18 @@ class EditBookController
             exit();
         }
 
-        // Préparer les données pour le formulaire (comme pour l'ajout)
         $oldInput = [
             'titre' => $book['titre'],
             'auteur' => $book['auteur'],
             'page_number' => $book['page_number']
         ];
         $errors = [];
-        $isEdit = true; // Flag pour indiquer que c'est une modification
+        $isEdit = true;
         
-        // Créer un objet book pour l'action du formulaire
         $bookObj = (object) $book;
 
         include 'views/layouts/header.php';
-        include 'views/media/add-book.php'; // Réutiliser la vue d'ajout
+        include 'views/media/add-book.php';
         include 'views/layouts/footer.php';
     }
     
@@ -62,13 +58,11 @@ class EditBookController
      */
     public function store()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID du livre
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         $bookId = (int)$path[2];
@@ -76,7 +70,6 @@ class EditBookController
         $errors = [];
         $oldInput = $_POST;
 
-        // Validation
         if (empty(trim($_POST['titre']))) {
             $errors['titre'] = 'Le titre est requis.';
         }
@@ -89,7 +82,6 @@ class EditBookController
             $errors['page_number'] = 'Le nombre de pages doit être un nombre positif.';
         }
 
-        // Si pas d'erreur, mettre à jour
         if (empty($errors)) {
             $success = $this->repository->updateBook(
                 $bookId,
@@ -106,7 +98,6 @@ class EditBookController
             }
         }
 
-        // Si erreur, réafficher le formulaire avec les erreurs
         $book = $this->repository->getMediaDetails($bookId);
         $isEdit = true;
         $bookObj = (object) $book;

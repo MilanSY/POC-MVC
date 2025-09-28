@@ -18,13 +18,11 @@ class EditSongsController
      */
     public function index()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID de l'album depuis l'URL
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         
@@ -35,7 +33,6 @@ class EditSongsController
         
         $albumId = (int)$path[2];
         
-        // Récupérer les données de l'album
         $album = $this->repository->getMediaDetails($albumId);
         
         if (!$album || $album['type_media'] !== 'album') {
@@ -43,17 +40,8 @@ class EditSongsController
             exit();
         }
         
-        // Récupérer les chansons existantes
-        $realAlbumId = $album['album_id']; // ID dans la table albums
+        $realAlbumId = $album['album_id']; 
         $songs = $this->repository->getAlbumSongs($realAlbumId);
-        
-        // Debug pour voir les données récupérées
-        error_log("EditSongsController - Media ID: " . $albumId);
-        error_log("EditSongsController - Real Album ID: " . $realAlbumId);
-        error_log("EditSongsController - Songs count: " . count($songs));
-        if (!empty($songs)) {
-            error_log("EditSongsController - First song: " . json_encode($songs[0]));
-        }
         
         $title = "Modifier les chansons";
         $errors = $this->errors;
@@ -63,10 +51,8 @@ class EditSongsController
             'nb_tracks' => $album['track_number']
         ];
         
-        // Préparer les données des chansons pour le formulaire
         $songsData = [];
         foreach ($songs as $song) {
-            // Parser la durée (format: "3min 45s" ou "45s")
             $durationString = $song['duration'];
             $minutes = 0;
             $seconds = 0;
@@ -87,7 +73,6 @@ class EditSongsController
             ];
         }
         
-        // Compléter avec des chansons vides si nécessaire
         while (count($songsData) < $album['track_number']) {
             $songsData[] = [
                 'id' => null,
@@ -99,7 +84,7 @@ class EditSongsController
         }
         
         include 'views/layouts/header.php';
-        include 'views/media/add-songs.php'; // Réutiliser la vue d'ajout
+        include 'views/media/add-songs.php';
         include 'views/layouts/footer.php';
     }
 
@@ -108,18 +93,15 @@ class EditSongsController
      */
     public function store()
     {
-        // Vérifier l'authentification
         if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
             header('Location: /login');
             exit();
         }
 
-        // Récupérer l'ID de l'album
         $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
         $path = explode("/", $uri);
         $albumId = (int)$path[2];
         
-        // Récupérer les données de l'album
         $album = $this->repository->getMediaDetails($albumId);
         if (!$album) {
             header('Location: /albums');
@@ -132,7 +114,6 @@ class EditSongsController
             'nb_tracks' => $album['track_number']
         ];
 
-        // Traitement des chansons
         $songs = [];
         $errors = [];
         
@@ -140,11 +121,9 @@ class EditSongsController
             $title = trim($_POST["song_title_{$i}"] ?? '');
             $note = (int)($_POST["song_note_{$i}"] ?? 0);
             
-            // Traitement de la durée (minutes et secondes)
             $minutes = (int)($_POST["song_duration_minutes_{$i}"] ?? 0);
             $seconds = (int)($_POST["song_duration_seconds_{$i}"] ?? 0);
             
-            // Validation
             if (empty($title)) {
                 $errors[] = "Le titre de la piste {$i} est requis.";
             }
@@ -157,7 +136,6 @@ class EditSongsController
                 $errors[] = "La note de la piste {$i} doit être entre 0 et 5.";
             }
             
-            // Construire la string de durée
             $durationString = '';
             if ($minutes > 0) {
                 $durationString .= $minutes . 'min';
@@ -177,10 +155,8 @@ class EditSongsController
 
         if (!empty($errors)) {
             $this->errors = $errors;
-            // Réafficher le formulaire avec les erreurs
             $title = "Modifier les chansons";
             
-            // Récupérer les chansons existantes pour le formulaire
             $album = $this->repository->getMediaDetails($albumId);
             $realAlbumId = $album['album_id'];
             $existingSongs = $this->repository->getAlbumSongs($realAlbumId);
@@ -194,7 +170,6 @@ class EditSongsController
                 ];
             }
             
-            // Compléter avec les données soumises en cas d'erreur
             for ($i = 0; $i < count($songs); $i++) {
                 if (isset($songsData[$i])) {
                     $songsData[$i]['title'] = $songs[$i]['title'];
@@ -216,9 +191,8 @@ class EditSongsController
             return;
         }
 
-        // Mettre à jour les chansons
         $album = $this->repository->getMediaDetails($albumId);
-        $realAlbumId = $album['album_id']; // ID dans la table albums
+        $realAlbumId = $album['album_id'];
         $success = $this->repository->updateAlbumSongs($realAlbumId, $songs);
 
         if ($success) {

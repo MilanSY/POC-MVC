@@ -64,48 +64,20 @@
                         </a>
                     </h3>
                     <p class="media-author">par <?= htmlspecialchars($media['auteur']) ?></p>
-                    
-                    <div class="media-details">
-                        <?php if ($media['type_media'] === 'book'): ?>
-                            <div class="detail-item">
-                                <span class="detail-label">Pages</span>
-                                <span class="detail-value"><?= $media['page_number'] ?? 'N/A' ?></span>
-                            </div>
-                        <?php elseif ($media['type_media'] === 'album'): ?>
-                            <div class="detail-item">
-                                <span class="detail-label">Pistes</span>
-                                <span class="detail-value"><?= $media['track_number'] ?? 'N/A' ?></span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Label</span>
-                                <span class="detail-value"><?= htmlspecialchars($media['editor'] ?? 'N/A') ?></span>
-                            </div>
-                        <?php elseif ($media['type_media'] === 'movie'): ?>
-                            <div class="detail-item">
-                                <span class="detail-label">Durée</span>
-                                <span class="detail-value"><?= $media['duration'] ?? 'N/A' ?> min</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Genre</span>
-                                <span class="detail-value"><?= $media['genre'] ?? 'N/A' ?></span>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <!-- Statut d'emprunt -->
-                        <div class="detail-item">
-                            <span class="detail-label">Statut</span>
-                            <span class="detail-value">
-                                <?php if ($media['disponible']): ?>
-                                    ✅ Disponible
-                                <?php else: ?>
-                                    📤 Emprunté par <strong><?= htmlspecialchars($media['borrowed_by_username'] ?? 'Inconnu') ?></strong>
-                                <?php endif; ?>
-                            </span>
-                        </div>
+                                        
+                    <div class="detail-item">
+                        <span class="detail-label">Statut</span>
+                        <span class="detail-value">
+                            <?php if ($media['disponible']): ?>
+                                Disponible
+                            <?php else: ?>
+                                Emprunté par <strong><?= htmlspecialchars($media['borrowed_by_username'] ?? 'Inconnu') ?></strong>
+                            <?php endif; ?>
+                        </span>
                     </div>
                     
                     <div class="media-actions">
-                        <a href="/<?= $media['type_media'] ?>-details/<?= $media['id'] ?>" class="btn btn-outline btn-small">👁️ Détails</a>
+                        <a href="/<?= $media['type_media'] ?>-details/<?= $media['id'] ?>" class="btn btn-outline btn-small">Détails</a>
                         
                         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                             <?php if ($media['disponible']): ?>

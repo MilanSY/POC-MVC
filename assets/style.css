@@ -106,6 +106,10 @@ body {
     margin-bottom: var(--space-2xl);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.5rem 2rem;
 }
 
 .header::before {
@@ -115,7 +119,6 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="90" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
     opacity: 0.3;
 }
 
@@ -140,15 +143,8 @@ body {
 }
 
 /* Section d'authentification dans le header */
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-}
 
 .auth-section {
-    position: absolute;
     z-index: 2;
     right: 0;
     padding: 1rem;
@@ -1095,6 +1091,72 @@ body {
 }
 
 /* =============================================
+   Formulaires de chansons (add-songs)
+   ============================================= */
+
+/* Container pour formulaire de chansons avec largeur étendue */
+.auth-container.songs-form {
+    max-width: 800px;
+}
+
+/* Conteneur pour chaque chanson */
+.song-form-item {
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    transition: all var(--transition-fast);
+}
+
+.song-form-item:hover {
+    border-color: var(--color-primary);
+    background: var(--color-surface);
+}
+
+/* Titre de piste */
+.song-form-title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Container pour les champs de durée */
+.duration-input-group {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.duration-input {
+    flex: 1;
+}
+
+.duration-separator {
+    font-weight: bold;
+    color: var(--color-text-secondary);
+    margin: 0 0.25rem;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+    .auth-container.songs-form {
+        padding: 1rem;
+    }
+
+    .song-form-item {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .duration-input-group {
+        gap: 0.5rem;
+    }
+}
+
+/* =============================================
    Page de détails des médias
    ============================================= */
 
@@ -1107,6 +1169,7 @@ body {
 
 .media-details-header {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--space-xl);
@@ -1498,26 +1561,26 @@ body {
     .media-details-container {
         padding: var(--space-md);
     }
-    
+
     .media-details-header {
         flex-direction: column;
         gap: var(--space-md);
         text-align: center;
     }
-    
+
     .media-main-info .media-title {
         font-size: 2rem;
     }
-    
+
     .secondary-actions {
         flex-direction: column;
     }
-    
+
     .form-group-inline {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .song-item {
         flex-direction: column;
         align-items: stretch;
