@@ -27,11 +27,11 @@ try {
     $pdo->exec("USE $dbname");
     
     // Lire et exécuter le fichier SQL
-    echo "🔄 Lecture du fichier database.sql...\n";
-    $sqlContent = file_get_contents('database.sql');
+    echo "🔄 Lecture du fichier var/database.sql...\n";
+    $sqlContent = file_get_contents('var/database.sql');
     
     if ($sqlContent === false) {
-        throw new Exception("Impossible de lire le fichier database.sql");
+        throw new Exception("Impossible de lire le fichier var/database.sql");
     }
 
     echo "🔄 Exécution du script SQL...\n";

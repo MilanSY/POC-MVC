@@ -30,7 +30,7 @@ class MediaRepository
                    u.username as borrowed_by_username
             FROM medias m
             JOIN books b ON m.id = b.media_id
-            LEFT JOIN users u ON m.borrowed_by_user_id = u.id
+            LEFT JOIN users u ON m.borrowed_by = u.id
             WHERE m.type_media = 'book'
             ORDER BY m.titre
         ");
@@ -52,7 +52,7 @@ class MediaRepository
                    u.username as borrowed_by_username
             FROM medias m
             JOIN movies mv ON m.id = mv.media_id
-            LEFT JOIN users u ON m.borrowed_by_user_id = u.id
+            LEFT JOIN users u ON m.borrowed_by = u.id
             WHERE m.type_media = 'movie'
             ORDER BY m.titre
         ");
@@ -72,15 +72,13 @@ class MediaRepository
         $stmt = $this->pdo->query("
             SELECT 
                 m.id, m.titre, m.auteur, m.disponible, a.track_number, a.editor,
-                COUNT(als.song_id) as songs_count,
+                COUNT(s.id) as songs_count,
                 ROUND(AVG(s.note), 2) as average_rating,
-                ROUND(SUM(s.duration), 2) as total_duration,
                 u.username as borrowed_by_username
             FROM medias m
             JOIN albums a ON m.id = a.media_id
-            LEFT JOIN users u ON m.borrowed_by_user_id = u.id
-            LEFT JOIN album_songs als ON a.id = als.album_id
-            LEFT JOIN songs s ON als.song_id = s.id
+            LEFT JOIN users u ON m.borrowed_by = u.id
+            LEFT JOIN songs s ON a.id = s.album_id
             WHERE m.type_media = 'album'
             GROUP BY m.id, m.titre, m.auteur, m.disponible, a.track_number, a.editor, u.username
             ORDER BY m.titre
@@ -110,7 +108,7 @@ class MediaRepository
             LEFT JOIN books b ON m.id = b.media_id AND m.type_media = 'book'
             LEFT JOIN movies mv ON m.id = mv.media_id AND m.type_media = 'movie'
             LEFT JOIN albums a ON m.id = a.media_id AND m.type_media = 'album'
-            LEFT JOIN users u ON m.borrowed_by_user_id = u.id
+            LEFT JOIN users u ON m.borrowed_by = u.id
         ";
         
         if ($type) {
@@ -135,11 +133,10 @@ class MediaRepository
     public function getAlbumSongs(int $albumId): array
     {
         $stmt = $this->pdo->prepare("
-            SELECT s.*, als.track_position 
+            SELECT s.* 
             FROM songs s
-            JOIN album_songs als ON s.id = als.song_id
-            WHERE als.album_id = ?
-            ORDER BY als.track_position
+            WHERE s.album_id = ?
+            ORDER BY s.id
         ");
         $stmt->execute([$albumId]);
         return $stmt->fetchAll();
@@ -174,8 +171,8 @@ class MediaRepository
     {
         $stmt = $this->pdo->prepare("
             UPDATE medias 
-            SET disponible = FALSE, borrowed_by_user_id = ?
-            WHERE id = ? AND disponible = TRUE AND borrowed_by_user_id IS NULL
+            SET disponible = FALSE, borrowed_by = ?
+            WHERE id = ? AND disponible = TRUE AND borrowed_by IS NULL
         ");
         $stmt->execute([$userId, $mediaId]);
         return $stmt->rowCount() > 0;
@@ -194,15 +191,15 @@ class MediaRepository
 
             $stmt = $this->pdo->prepare("
                 UPDATE medias 
-                SET disponible = TRUE, borrowed_by_user_id = NULL
-                WHERE id = ? AND disponible = FALSE AND borrowed_by_user_id = ?
+                SET disponible = TRUE, borrowed_by = NULL
+                WHERE id = ? AND disponible = FALSE AND borrowed_by = ?
             ");
             $stmt->execute([$mediaId, $userId]);
         } else {
 
             $stmt = $this->pdo->prepare("
                 UPDATE medias 
-                SET disponible = TRUE, borrowed_by_user_id = NULL
+                SET disponible = TRUE, borrowed_by = NULL
                 WHERE id = ? AND disponible = FALSE
             ");
             $stmt->execute([$mediaId]);
@@ -221,7 +218,7 @@ class MediaRepository
         $stmt = $this->pdo->prepare("
             SELECT m.id, m.titre, m.auteur, m.type_media
             FROM medias m
-            WHERE m.borrowed_by_user_id = ?
+            WHERE m.borrowed_by = ?
             ORDER BY m.titre
         ");
         $stmt->execute([$userId]);
@@ -237,14 +234,14 @@ class MediaRepository
     public function canBorrowMedia(int $mediaId): bool
     {
         $stmt = $this->pdo->prepare("
-            SELECT disponible, borrowed_by_user_id 
+            SELECT disponible, borrowed_by 
             FROM medias 
             WHERE id = ?
         ");
         $stmt->execute([$mediaId]);
         $media = $stmt->fetch();
         
-        return $media && $media['disponible'] && $media['borrowed_by_user_id'] === null;
+        return $media && $media['disponible'] && $media['borrowed_by'] === null;
     }
 
     /**
@@ -258,7 +255,7 @@ class MediaRepository
         $stmt = $this->pdo->prepare("
             UPDATE medias 
             SET disponible = TRUE 
-            WHERE disponible = FALSE AND borrowed_by_user_id IS NULL
+            WHERE disponible = FALSE AND borrowed_by IS NULL
         ");
         $stmt->execute();
         return $stmt->rowCount();
@@ -319,11 +316,11 @@ class MediaRepository
      * 
      * @param string $titre Titre du film
      * @param string $auteur Réalisateur du film
-     * @param int $duration Durée en minutes
+     * @param string $duration Durée au format string (ex: "2h 30min")
      * @param string $genre Genre du film
      * @return bool
      */
-    public function addMovie(string $titre, string $auteur, int $duration, string $genre): bool
+    public function addMovie(string $titre, string $auteur, string $duration, string $genre): bool
     {
         try {
             $this->pdo->beginTransaction();
@@ -357,7 +354,7 @@ class MediaRepository
      * @param string $titre Titre de l'album
      * @param string $auteur Artiste de l'album
      * @param string $editeur Éditeur de l'album
-     * @param array $songs Tableau des chansons [['title' => '', 'note' => 0, 'duration' => 0], ...]
+     * @param array $songs Tableau des chansons [['title' => '', 'note' => 0, 'duration' => ''], ...]
      * @return bool
      */
     public function addAlbumWithSongs(string $titre, string $auteur, string $editeur, array $songs): bool
@@ -381,30 +378,23 @@ class MediaRepository
             $stmt->execute([$mediaId, count($songs), $editeur]);
             $albumId = $this->pdo->lastInsertId();
             
-            // Insérer les chansons
+            // Insérer les chansons directement liées à l'album
             $songStmt = $this->pdo->prepare("
-                INSERT INTO songs (title, note, duration) 
-                VALUES (?, ?, ?)
+                INSERT INTO songs (title, note, duration, album_id) 
+                VALUES (?, ?, ?, ?)
             ");
             
-            $albumSongStmt = $this->pdo->prepare("
-                INSERT INTO album_songs (album_id, song_id, track_position) 
-                VALUES (?, ?, ?)
-            ");
-            
-            foreach ($songs as $index => $song) {
-                // Insérer la chanson
-                $songStmt->execute([$song['title'], $song['note'], $song['duration']]);
-                $songId = $this->pdo->lastInsertId();
-                
-                // Lier la chanson à l'album
-                $albumSongStmt->execute([$albumId, $songId, $index + 1]);
+            foreach ($songs as $song) {
+                // Insérer la chanson avec l'album_id
+                $songStmt->execute([$song['title'], $song['note'], $song['duration'], $albumId]);
             }
             
             $this->pdo->commit();
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
+            // Pour débugger : log ou afficher l'erreur
+            error_log("Erreur addAlbumWithSongs: " . $e->getMessage());
             return false;
         }
     }

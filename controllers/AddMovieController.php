@@ -77,11 +77,22 @@ class AddMovieController
         }
 
         if (empty($this->errors)) {
-            // Calculer la durée totale en minutes
-            $totalMinutes = ((int)($_POST['duration_hours'] ?? 0)) * 60 + ((int)($_POST['duration_minutes'] ?? 0));
+            // Formatter la durée en string
+            $hours = (int)($_POST['duration_hours'] ?? 0);
+            $minutes = (int)($_POST['duration_minutes'] ?? 0);
+            
+            $durationString = '';
+            if ($hours > 0) {
+                $durationString .= $hours . 'h';
+                if ($minutes > 0) {
+                    $durationString .= ' ' . $minutes . 'min';
+                }
+            } else {
+                $durationString = $minutes . 'min';
+            }
             
             // Ajouter le film en base
-            $success = $this->repository->addMovie($_POST['titre'], $_POST['auteur'], $totalMinutes, $_POST['genre']);
+            $success = $this->repository->addMovie($_POST['titre'], $_POST['auteur'], $durationString, $_POST['genre']);
             
             if ($success) {
                 header('Location: /movies?success=1');

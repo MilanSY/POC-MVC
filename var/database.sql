@@ -3,8 +3,6 @@
 -- =============================================
 
 -- Supprimer les tables existantes si elles existent
-DROP TABLE IF EXISTS album_songs;
-
 DROP TABLE IF EXISTS songs;
 
 DROP TABLE IF EXISTS albums;
@@ -40,9 +38,9 @@ CREATE TABLE medias (
     auteur VARCHAR(255) NOT NULL,
     disponible BOOLEAN DEFAULT TRUE,
     type_media ENUM('book', 'movie', 'album') NOT NULL,
-    borrowed_by_user_id INT DEFAULT NULL,
-    FOREIGN KEY (borrowed_by_user_id) REFERENCES users (id) ON DELETE SET NULL,
-    INDEX idx_borrowed_by (borrowed_by_user_id),
+    borrowed_by INT DEFAULT NULL,
+    FOREIGN KEY (borrowed_by) REFERENCES users (id) ON DELETE SET NULL,
+    INDEX idx_borrowed_by (borrowed_by),
     INDEX idx_type_media (type_media)
 );
 
@@ -58,7 +56,7 @@ CREATE TABLE books (
 CREATE TABLE movies (
     id INT PRIMARY KEY AUTO_INCREMENT,
     media_id INT NOT NULL,
-    duration DECIMAL(6, 2) NOT NULL, -- Durée en minutes
+    duration VARCHAR(20) NOT NULL, -- Durée au format string (ex: "2h 30min")
     genre ENUM(
         'Action',
         'Comédie',
@@ -79,25 +77,18 @@ CREATE TABLE albums (
     FOREIGN KEY (media_id) REFERENCES medias (id) ON DELETE CASCADE
 );
 
--- Table Songs
+-- Table Songs (relation directe avec albums)
 CREATE TABLE songs (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    titre VARCHAR(255) NOT NULL,
-    duration DECIMAL(6, 2) NOT NULL, -- Durée en minutes
+    title VARCHAR(255) NOT NULL,
+    duration VARCHAR(20) NOT NULL, -- Durée au format string (ex: "3min 45s")
     note INT DEFAULT 0 CHECK (
         note >= 0
         AND note <= 5
-    )
-);
-
--- Table de liaison Album-Songs
-CREATE TABLE album_songs (
-    album_id INT,
-    song_id INT,
-    track_position INT,
-    PRIMARY KEY (album_id, song_id),
+    ),
+    album_id INT NOT NULL,
     FOREIGN KEY (album_id) REFERENCES albums (id) ON DELETE CASCADE,
-    FOREIGN KEY (song_id) REFERENCES songs (id) ON DELETE CASCADE
+    INDEX idx_album_id (album_id)
 );
 
 -- =============================================
@@ -218,103 +209,15 @@ VALUES (
 
 INSERT INTO
     movies (media_id, duration, genre)
-VALUES (7, 148.0, 'Science-Fiction'), -- Inception
-    (8, 175.0, 'Drame'), -- Le Parrain
-    (9, 154.0, 'Action'), -- Pulp Fiction
-    (10, 169.0, 'Science-Fiction'), -- Interstellar
-    (11, 195.0, 'Drame'), -- La Liste de Schindler
-    (12, 164.0, 'Science-Fiction'), -- Blade Runner 2049
-    (13, 122.0, 'Comédie'), -- Amélie Poulain
-    (14, 146.0, 'Horreur');
+VALUES (7, '2h 28min', 'Science-Fiction'), -- Inception
+    (8, '2h 55min', 'Drame'), -- Le Parrain
+    (9, '2h 34min', 'Action'), -- Pulp Fiction
+    (10, '2h 49min', 'Science-Fiction'), -- Interstellar
+    (11, '3h 15min', 'Drame'), -- La Liste de Schindler
+    (12, '2h 44min', 'Science-Fiction'), -- Blade Runner 2049
+    (13, '2h 2min', 'Comédie'), -- Amélie Poulain
+    (14, '2h 26min', 'Horreur');
 -- Shining
-
--- === CHANSONS ===
-INSERT INTO
-    songs (titre, duration, note)
-VALUES
-    -- Songs pour Abbey Road
-    ('Come Together', 4.33, 5),
-    ('Something', 3.05, 4),
-    (
-        'Maxwell\'s Silver Hammer',
-        3.28,
-        3
-    ),
-    ('Oh! Darling', 3.27, 4),
-    ('Octopus\'s Garden', 2.51, 3),
-    (
-        'I Want You (She\'s So Heavy)',
-        7.47,
-        5
-    ),
-    ('Here Comes the Sun', 3.05, 5),
-    ('Because', 2.46, 4),
-    (
-        'You Never Give Me Your Money',
-        4.02,
-        4
-    ),
-    ('Sun King', 2.26, 3),
-    ('Mean Mr. Mustard', 1.06, 2),
-    ('Polythene Pam', 1.13, 3),
-    (
-        'She Came in Through the Bathroom Window',
-        1.57,
-        3
-    ),
-    ('Golden Slumbers', 1.31, 4),
-    ('Carry That Weight', 1.36, 4),
-    ('The End', 2.20, 5),
-    ('Her Majesty', 0.23, 2),
-
--- Songs pour Thriller
-(
-    'Wanna Be Startin\' Somethin\'',
-    6.03,
-    4
-),
-('Baby Be Mine', 4.20, 3),
-('The Girl Is Mine', 3.42, 3),
-('Thriller', 5.57, 5),
-('Beat It', 4.18, 5),
-('Billie Jean', 4.54, 5),
-('Human Nature', 4.06, 4),
-(
-    'P.Y.T. (Pretty Young Thing)',
-    3.59,
-    4
-),
-(
-    'The Lady in My Life',
-    5.00,
-    3
-),
-
--- Songs pour OK Computer
-('Airbag', 4.44, 4),
-('Paranoid Android', 6.23, 5),
-(
-    'Subterranean Homesick Alien',
-    4.27,
-    4
-),
-(
-    'Exit Music (For a Film)',
-    4.24,
-    5
-),
-('Let Down', 4.59, 4),
-('Karma Police', 4.21, 5),
-('Fitter Happier', 1.57, 2),
-('Electioneering', 3.50, 3),
-(
-    'Climbing Up the Walls',
-    4.45,
-    4
-),
-('No Surprises', 3.48, 4),
-('Lucky', 4.19, 3),
-('The Tourist', 5.24, 4);
 
 -- === ALBUMS ===
 INSERT INTO
@@ -368,65 +271,51 @@ VALUES (15, 17, 'Apple Records'), -- Abbey Road
     (19, 12, 'DGC Records');
 -- Nevermind
 
--- === LIAISON ALBUMS-SONGS ===
--- Abbey Road (album_id = 1)
+-- === CHANSONS ===
 INSERT INTO
-    album_songs (
-        album_id,
-        song_id,
-        track_position
-    )
-VALUES (1, 1, 1),
-    (1, 2, 2),
-    (1, 3, 3),
-    (1, 4, 4),
-    (1, 5, 5),
-    (1, 6, 6),
-    (1, 7, 7),
-    (1, 8, 8),
-    (1, 9, 9),
-    (1, 10, 10),
-    (1, 11, 11),
-    (1, 12, 12),
-    (1, 13, 13),
-    (1, 14, 14),
-    (1, 15, 15),
-    (1, 16, 16),
-    (1, 17, 17);
+    songs (title, duration, note, album_id)
+VALUES
+    -- Songs pour Abbey Road (album_id = 1)
+    ('Come Together', '4min 20s', 5, 1),
+    ('Something', '3min 3s', 4, 1),
+    ('Maxwell\'s Silver Hammer', '3min 17s', 3, 1),
+    ('Oh! Darling', '3min 16s', 4, 1),
+    ('Octopus\'s Garden', '2min 51s', 3, 1),
+    ('I Want You (She\'s So Heavy)', '7min 47s', 5, 1),
+    ('Here Comes the Sun', '3min 5s', 5, 1),
+    ('Because', '2min 45s', 4, 1),
+    ('You Never Give Me Your Money', '4min 2s', 4, 1),
+    ('Sun King', '2min 26s', 3, 1),
+    ('Mean Mr. Mustard', '1min 6s', 2, 1),
+    ('Polythene Pam', '1min 12s', 3, 1),
+    ('She Came in Through the Bathroom Window', '1min 57s', 3, 1),
+    ('Golden Slumbers', '1min 31s', 4, 1),
+    ('Carry That Weight', '1min 36s', 4, 1),
+    ('The End', '2min 20s', 5, 1),
+    ('Her Majesty', '23s', 2, 1),
 
--- Thriller (album_id = 2)
-INSERT INTO
-    album_songs (
-        album_id,
-        song_id,
-        track_position
-    )
-VALUES (2, 18, 1),
-    (2, 19, 2),
-    (2, 20, 3),
-    (2, 21, 4),
-    (2, 22, 5),
-    (2, 23, 6),
-    (2, 24, 7),
-    (2, 25, 8),
-    (2, 26, 9);
+    -- Songs pour Thriller (album_id = 2)
+    ('Wanna Be Startin\' Somethin\'', '6min 3s', 4, 2),
+    ('Baby Be Mine', '4min 20s', 3, 2),
+    ('The Girl Is Mine', '3min 42s', 3, 2),
+    ('Thriller', '5min 57s', 5, 2),
+    ('Beat It', '4min 18s', 5, 2),
+    ('Billie Jean', '4min 54s', 5, 2),
+    ('Human Nature', '4min 6s', 4, 2),
+    ('P.Y.T. (Pretty Young Thing)', '3min 59s', 4, 2),
+    ('The Lady in My Life', '5min', 3, 2),
 
--- OK Computer (album_id = 3)
-INSERT INTO
-    album_songs (
-        album_id,
-        song_id,
-        track_position
-    )
-VALUES (3, 27, 1),
-    (3, 28, 2),
-    (3, 29, 3),
-    (3, 30, 4),
-    (3, 31, 5),
-    (3, 32, 6),
-    (3, 33, 7),
-    (3, 34, 8),
-    (3, 35, 9),
-    (3, 36, 10),
-    (3, 37, 11),
-    (3, 38, 12);
+    -- Songs pour OK Computer (album_id = 3)
+    ('Airbag', '4min 44s', 4, 3),
+    ('Paranoid Android', '6min 23s', 5, 3),
+    ('Subterranean Homesick Alien', '4min 27s', 4, 3),
+    ('Exit Music (For a Film)', '4min 24s', 5, 3),
+    ('Let Down', '4min 59s', 4, 3),
+    ('Karma Police', '4min 21s', 5, 3),
+    ('Fitter Happier', '1min 57s', 2, 3),
+    ('Electioneering', '3min 50s', 3, 3),
+    ('Climbing Up the Walls', '4min 45s', 4, 3),
+    ('No Surprises', '3min 48s', 4, 3),
+    ('Lucky', '4min 19s', 3, 3),
+    ('The Tourist', '5min 24s', 4, 3);
+
