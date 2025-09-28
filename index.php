@@ -8,6 +8,7 @@ require_once 'models/Song.php';
 require_once 'models/User.php';
 require_once 'var/MediaRepository.php';
 require_once 'var/PasswordValidator.php';
+require_once 'var/SessionManager.php';
 
 // Démarrer la session
 session_start();
@@ -120,7 +121,6 @@ switch ($page) {
         break;
         
     default:
-        // Page 404
         http_response_code(404);
         include 'views/errors/404.php';
         break;

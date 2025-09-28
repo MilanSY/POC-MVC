@@ -123,6 +123,36 @@ class User
     }
 
     /**
+     * Trouver un utilisateur par son ID
+     * 
+     * @param int $id ID de l'utilisateur
+     * @return User|null Utilisateur trouvé ou null
+     */
+    public static function findById(int $id): ?User
+    {
+        try {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(['id' => $id]);
+            $userData = $stmt->fetch();
+            
+            if ($userData) {
+                return new User(
+                    $userData['username'],
+                    $userData['email'],
+                    $userData['password_hash'],
+                    $userData['id']
+                );
+            }
+            
+            return null;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la recherche d'utilisateur par ID: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Trouver un utilisateur par son email
      * 
      * @param string $email Email de l'utilisateur

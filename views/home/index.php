@@ -1,11 +1,16 @@
-<div class="hero-section">
-    <h2 class="hero-title">Bienvenue dans votre médiathèque</h2>
-    <p class="hero-subtitle">
-        Explorez notre collection riche et variée de livres, albums et films. 
-        Découvrez de nouveaux trésors et gérez facilement vos emprunts.
-    </p>
-</div>
 
+<?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+<section class="section">
+    <div class="section-header">
+        <h3 class="section-title">Ajouter un media</h3>
+    </div>
+    <div class="admin-actions">
+        <a href="/add-book" class="btn btn-secondary">Ajouter un livre</a>
+        <a href="/add-movie" class="btn btn-secondary">Ajouter un film</a>
+        <a href="/add-album" class="btn btn-secondary">Ajouter un album</a>
+    </div>
+</section>
+<?php endif; ?>
 
 <section class="section">
     <div class="stats">
@@ -27,19 +32,6 @@
         </div>
     </div>
 </section>
-
-<?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
-<section class="section">
-    <div class="section-header">
-        <h3 class="section-title">Administration</h3>
-    </div>
-    <div class="admin-actions">
-        <a href="/add-book" class="btn btn-secondary">📚 Ajouter un livre</a>
-        <a href="/add-movie" class="btn btn-secondary">🎬 Ajouter un film</a>
-        <a href="/add-album" class="btn btn-secondary">🎵 Ajouter un album</a>
-    </div>
-</section>
-<?php endif; ?>
 
 <?php if (!empty($allMedias)): ?>
     <section class="featured-section">
