@@ -1,11 +1,11 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h1 class="auth-title">Ajouter un film</h1>
-            <p class="auth-subtitle">Ajoutez un nouveau film à la médiathèque</p>
+            <h1 class="auth-title"><?= $isEdit ? 'Modifier un film' : 'Ajouter un film' ?></h1>
+            <p class="auth-subtitle"><?= $isEdit ? 'Modifiez les informations du film' : 'Ajoutez un nouveau film à la médiathèque' ?></p>
         </div>
         
-        <form method="POST" action="/add-movie" class="auth-form">
+        <form method="POST" action="<?= $isEdit ? '/edit-movie/' . $movieObj->id : '/add-movie' ?>" class="auth-form">
             <div class="form-group">
                 <label for="titre" class="form-label">Titre *</label>
                 <input 
@@ -76,7 +76,7 @@
             </div>
             
             <button type="submit" class="btn btn-primary btn-full">
-                Ajouter le film
+                <?= $isEdit ? 'Modifier le film' : 'Ajouter le film' ?>
             </button>
         </form>
         

@@ -398,4 +398,219 @@ class MediaRepository
             return false;
         }
     }
+
+    /**
+     * Obtenir les détails d'un média par son ID
+     * 
+     * @param int $mediaId ID du média
+     * @return array|false Détails du média ou false si non trouvé
+     */
+    public function getMediaDetails(int $mediaId)
+    {
+        // Nettoyer les incohérences avant de retourner les données
+        $this->fixInconsistentMedias();
+        
+        $stmt = $this->pdo->prepare("
+            SELECT 
+                m.id, m.titre, m.auteur, m.disponible, m.type_media, m.borrowed_by,
+                b.page_number,
+                mv.duration as movie_duration, mv.genre,
+                a.track_number, a.editor, a.id as album_id,
+                u.username as borrowed_by_username,
+                u.id as borrowed_by_id
+            FROM medias m
+            LEFT JOIN books b ON m.id = b.media_id AND m.type_media = 'book'
+            LEFT JOIN movies mv ON m.id = mv.media_id AND m.type_media = 'movie'
+            LEFT JOIN albums a ON m.id = a.media_id AND m.type_media = 'album'
+            LEFT JOIN users u ON m.borrowed_by = u.id
+            WHERE m.id = ?
+        ");
+        $stmt->execute([$mediaId]);
+        $media = $stmt->fetch();
+        
+        if ($media && $media['type_media'] === 'album' && $media['album_id']) {
+            // Récupérer les chansons de l'album
+            $media['songs'] = $this->getAlbumSongs($media['album_id']);
+        }
+        
+        return $media;
+    }
+
+    /**
+     * Supprimer un média
+     * 
+     * @param int $mediaId ID du média
+     * @return bool
+     */
+    public function deleteMedia(int $mediaId): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Les suppressions en cascade sont gérées par les contraintes de clé étrangère
+            $stmt = $this->pdo->prepare("DELETE FROM medias WHERE id = ?");
+            $stmt->execute([$mediaId]);
+            
+            $this->pdo->commit();
+            return $stmt->rowCount() > 0;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Mettre à jour un livre
+     * 
+     * @param int $mediaId ID du média
+     * @param string $titre Nouveau titre
+     * @param string $auteur Nouvel auteur
+     * @param int $pageNumber Nouveau nombre de pages
+     * @return bool
+     */
+    public function updateBook(int $mediaId, string $titre, string $auteur, int $pageNumber): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Mettre à jour la table medias
+            $stmt = $this->pdo->prepare("UPDATE medias SET titre = ?, auteur = ? WHERE id = ? AND type_media = 'book'");
+            $stmt->execute([$titre, $auteur, $mediaId]);
+            
+            // Mettre à jour la table books
+            $stmt = $this->pdo->prepare("UPDATE books SET page_number = ? WHERE media_id = ?");
+            $stmt->execute([$pageNumber, $mediaId]);
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Mettre à jour un film
+     * 
+     * @param int $mediaId ID du média
+     * @param string $titre Nouveau titre
+     * @param string $auteur Nouvel auteur/réalisateur
+     * @param string $duration Nouvelle durée
+     * @param string $genre Nouveau genre
+     * @return bool
+     */
+    public function updateMovie(int $mediaId, string $titre, string $auteur, string $duration, string $genre): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Mettre à jour la table medias
+            $stmt = $this->pdo->prepare("UPDATE medias SET titre = ?, auteur = ? WHERE id = ? AND type_media = 'movie'");
+            $stmt->execute([$titre, $auteur, $mediaId]);
+            
+            // Mettre à jour la table movies
+            $stmt = $this->pdo->prepare("UPDATE movies SET duration = ?, genre = ? WHERE media_id = ?");
+            $stmt->execute([$duration, $genre, $mediaId]);
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Mettre à jour un album (sans les chansons)
+     * 
+     * @param int $mediaId ID du média
+     * @param string $titre Nouveau titre
+     * @param string $auteur Nouvel auteur/artiste
+     * @param int $trackNumber Nouveau nombre de pistes
+     * @param string $editor Nouvel éditeur
+     * @return bool
+     */
+    public function updateAlbum(int $mediaId, string $titre, string $auteur, int $trackNumber, string $editor): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Mettre à jour la table medias
+            $stmt = $this->pdo->prepare("UPDATE medias SET titre = ?, auteur = ? WHERE id = ? AND type_media = 'album'");
+            $stmt->execute([$titre, $auteur, $mediaId]);
+            
+            // Mettre à jour la table albums
+            $stmt = $this->pdo->prepare("UPDATE albums SET track_number = ?, editor = ? WHERE media_id = ?");
+            $stmt->execute([$trackNumber, $editor, $mediaId]);
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Mettre à jour une chanson
+     * 
+     * @param int $songId ID de la chanson
+     * @param string $title Nouveau titre
+     * @param string $duration Nouvelle durée
+     * @param int $note Nouvelle note
+     * @return bool
+     */
+    public function updateSong(int $songId, string $title, string $duration, int $note): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare("
+                UPDATE songs 
+                SET title = ?, duration = ?, note = ? 
+                WHERE id = ?
+            ");
+            $stmt->execute([$title, $duration, $note, $songId]);
+            return $stmt->rowCount() > 0;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Mettre à jour toutes les chansons d'un album
+     * @param int $albumId ID de l'album
+     * @param array $songs Tableau des chansons [['title' => '', 'duration' => '', 'note' => 0], ...]
+     * @return bool Succès de l'opération
+     */
+    public function updateAlbumSongs(int $albumId, array $songs): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Supprimer toutes les chansons existantes de cet album
+            $deleteStmt = $this->pdo->prepare("DELETE FROM songs WHERE album_id = ?");
+            $deleteStmt->execute([$albumId]);
+            
+            // Insérer les nouvelles chansons
+            $insertStmt = $this->pdo->prepare("
+                INSERT INTO songs (title, note, duration, album_id) 
+                VALUES (?, ?, ?, ?)
+            ");
+            
+            foreach ($songs as $song) {
+                $insertStmt->execute([
+                    $song['title'], 
+                    $song['note'], 
+                    $song['duration'], 
+                    $albumId
+                ]);
+            }
+            
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            error_log("Erreur updateAlbumSongs: " . $e->getMessage());
+            return false;
+        }
+    }
 }

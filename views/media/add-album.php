@@ -1,11 +1,11 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h1 class="auth-title">Ajouter un album</h1>
-            <p class="auth-subtitle">Ajoutez un nouvel album à la médiathèque</p>
+            <h1 class="auth-title"><?= $isEdit ? 'Modifier un album' : 'Ajouter un album' ?></h1>
+            <p class="auth-subtitle"><?= $isEdit ? 'Modifiez les informations de l\'album' : 'Ajoutez un nouvel album à la médiathèque' ?></p>
         </div>
         
-        <form method="POST" action="/add-album" class="auth-form">
+        <form method="POST" action="<?= $isEdit ? '/edit-album/' . $albumObj->id : '/add-album' ?>" class="auth-form">
             <div class="form-group">
                 <label for="titre" class="form-label">Titre *</label>
                 <input 
@@ -57,7 +57,7 @@
             </div>
             
             <button type="submit" class="btn btn-primary btn-full">
-                Continuer vers les pistes
+                <?= $isEdit ? 'Modifier l\'album' : 'Continuer vers les pistes' ?>
             </button>
         </form>
         
