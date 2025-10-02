@@ -5,6 +5,7 @@ puis dans un powershell/bash:
 - php -S localhost:8000
 
 Gestion de la Liste de médias:
+
     ● Être capable d’ajouter, modifier et supprimer des Médias, de les emprunter & de les rendre. ✅
         ○ Uniquement pour les utilisateurs authentifiés  ✅️
     ● Un utilisateur peut rechercher un film de manière approximative. ❌️
@@ -14,6 +15,7 @@ Gestion de la Liste de médias:
     ● Gérer du Lazy Loading (Optionnel) ❌️
 
 Authentification :
+
     ● Mettez en place un système d'inscription et de connexion pour les utilisateurs. ✅
     ● Utilisez des mots de passe hashés et des sessions pour gérer l'authentification. ✅
     ● Le mot de passe doit être soumis à une regex. ✅
@@ -21,5 +23,6 @@ Authentification :
         ○ Le mot de passe ne doit pas contenir l’identifiant de l’utilisateur. ✅
 
 Tableau de Bord :
+
     ● Affichez un tableau de bord qui affiche la liste des médias et affiché si ils sont disponibles ou non. ✅
     ● Affichez le nom de l'utilisateur et un lien pour se déconnecter dans une barre de navigation. ✅
